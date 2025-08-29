@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Gambler</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="auth-view">
+        <div class="auth-container">
+            <div id="login-form" class="form-container">
+                <h2>Login</h2>
+                <form>
+                    <div class="input-group"><label for="login-username">Username</label><input type="text" id="login-username" name="username" required></div>
+                    <div class="input-group"><label for="login-password">Password</label><input type="password" id="login-password" name="password" required></div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                <p class="form-switcher">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+            </div>
+            <div id="register-form" class="form-container hidden">
+                <h2>Register</h2>
+                <form>
+                    <div class="input-group"><label for="register-username">Username</label><input type="text" id="register-username" name="username" required></div>
+                    <div class="input-group"><label for="register-password">Password</label><input type="password" id="register-password" name="password" required></div>
+                    <div class="input-group"><label for="register-confirm-password">Confirm Password</label><input type="password" id="register-confirm-password" name="confirm_password" required></div>
+                    <button type="submit" class="btn">Register</button>
+                </form>
+                <p class="form-switcher">Already have an account? <a href="#" id="show-login">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-view" class="hidden">
+        <header>
+            <h1 id="app-title">The Gambler</h1>
+            <nav>
+                <button id="dashboard-nav" class="btn btn-nav">Dashboard</button>
+                <button id="my-bets-nav" class="btn btn-nav">Weekly Games</button>
+                <button id="leaderboard-nav" class="btn btn-nav">Leaderboard</button>
+            </nav>
+            <div class="user-info">
+                <div class="user-tier">
+                    <span id="user-tier-icon">?</span>
+                    <span id="user-tier-name">Tier</span>
+                </div>
+                <div id="user-balance-container">
+                    <span id="user-balance-icon">💰</span>
+                    <span id="user-balance">0.00</span>
+                </div>
+                <span id="welcome-username">username</span>
+                <button id="logout-button" class="btn-secondary">Logout</button>
+            </div>
+        </header>
+        <main id="main-content"></main>
+    </div>
+
+    <div id="p2p-modal" class="modal-container hidden">
+        <div class="modal-content">
+            <span class="close-modal-btn">&times;</span>
+            <h2>Challenge <span id="challenge-username"></span></h2>
+            <form id="p2p-challenge-form">
+                <div class="input-group">
+                    <label for="bet-description">Bet Description</label>
+                    <input type="text" id="bet-description" placeholder="e.g., Lakers win tonight" required>
+                </div>
+                <div class="input-group">
+                    <label for="p2p-wager">Wager Amount</label>
+                    <input type="number" id="p2p-wager" placeholder="50" required>
+                </div>
+                <button type="submit" class="btn">Send Challenge</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
