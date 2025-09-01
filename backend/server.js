@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
-// --- More Robust CORS Configuration ---
+// --- Definitive CORS Configuration ---
 const corsOptions = {
     origin: "https://creative-alpaca-2c097c.netlify.app",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -16,10 +16,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
 app.use(express.json());
 
+
 const io = new Server(server, {
-    cors: corsOptions // Use the same options for Socket.IO
+    cors: corsOptions
 });
 
 const p2pRoutes = require('./routes/p2p')(io);
