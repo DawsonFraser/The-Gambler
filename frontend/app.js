@@ -1,20 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const SUPABASE_URL = 'https://gausmmcqmpfignfivymi.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhdXNtbWNxbXBmaWduZml2eW1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTYwNzcsImV4cCI6MjA3MTYzMjA3N30.1_KPWn-hps2BV98-0rbN5pPFl8xBrGndfrB_chIZnSg';
+    const SUPABASE_URL = 'https://vrxhzvrsngugxfwrwftg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzcmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTc3MjksImV4cCI6MjA3MTYzMzcyOX0.4x42dk-y-a_g5k1-c4tYkZuY4k-8aY3j-p-bJ5cF8yM';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- STATE MANAGEMENT ---
-    const state = {
-        user: null,
-    };
+    const state = { user: null };
 
-    // --- DOM ELEMENTS ---
     const DOM = {
         authView: document.getElementById('auth-view'),
         appView: document.getElementById('app-view'),
         mainContent: document.getElementById('main-content'),
         loginForm: document.getElementById('login-form'),
         registerForm: document.getElementById('register-form'),
+        showRegisterLink: document.getElementById('show-register'),
+        showLoginLink: document.getElementById('show-login'),
         welcomeUsername: document.getElementById('welcome-username'),
         userBalance: document.getElementById('user-balance'),
         dashboardNav: document.getElementById('dashboard-nav'),
@@ -23,66 +21,33 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutButton: document.getElementById('logout-button'),
     };
 
-    // --- RENDER FUNCTIONS ---
     const renderHeader = () => {
         if (!state.user) return;
         DOM.welcomeUsername.textContent = state.user.email;
     };
 
     const renderDashboard = () => {
-        DOM.mainContent.innerHTML = `<div class="dashboard-container"><h2>Dashboard</h2><p>Welcome to your dashboard.</p></div>`;
+        DOM.mainContent.innerHTML = `<h2>Dashboard</h2><p>Welcome, ${state.user.email}.</p>`;
     };
 
-    const renderGameCenter = async () => {
-        const { data: games, error } = await supabaseClient.from('games').select(`
-            *,
-            home_team:home_team_id (team_name, abbreviation),
-            away_team:away_team_id (team_name, abbreviation)
-        `).eq('status', 'scheduled');
-
-        if (error) {
-            console.error('Error fetching games:', error);
-            return;
-        }
-
-        const gamesHtml = games.map(game => `
-            <div class="game-card">
-                <div class="matchup">
-                    <div class="team">${game.away_team.team_name}</div>
-                    <span class="at-symbol">@</span>
-                    <div class="team">${game.home_team.team_name}</div>
-                </div>
-            </div>
-        `).join('');
-
-        DOM.mainContent.innerHTML = `<div class="game-center-container"><h2>Weekly Games</h2>${gamesHtml}</div>`;
-    };
-    
-    // --- EVENT HANDLERS ---
     const handleLogin = async (e) => {
         e.preventDefault();
-        const email = e.target.elements['login-username'].value;
-        const password = e.target.elements['login-password'].value;
+        const email = DOM.loginForm.querySelector('#login-email').value;
+        const password = DOM.loginForm.querySelector('#login-password').value;
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) {
-            alert(`Login Error: ${error.message}`);
-        } else {
-            showAppView(data.user);
-        }
+        if (error) return alert(`Login Error: ${error.message}`);
+        showAppView(data.user);
     };
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        const email = e.target.elements['register-username'].value;
-        const password = e.target.elements['register-password'].value;
-        const { data, error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) {
-            alert(`Registration Error: ${error.message}`);
-        } else {
-            alert('Registration successful! Please check your email to confirm.');
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-        }
+        const email = DOM.registerForm.querySelector('#register-email').value;
+        const password = DOM.registerForm.querySelector('#register-password').value;
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) return alert(`Registration Error: ${error.message}`);
+        alert('Registration successful! Please check your email to confirm.');
+        DOM.registerForm.classList.add('hidden');
+        DOM.loginForm.classList.remove('hidden');
     };
 
     const handleLogout = async () => {
@@ -90,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showAuthView();
     };
 
-    // --- VIEW MANAGEMENT ---
     const showAuthView = () => {
         state.user = null;
         DOM.authView.classList.remove('hidden');
@@ -105,26 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDashboard();
     };
 
-    // --- INITIALIZATION ---
     const init = async () => {
         DOM.loginForm.addEventListener('submit', handleLogin);
         DOM.registerForm.addEventListener('submit', handleRegister);
         DOM.logoutButton.addEventListener('click', handleLogout);
+        DOM.dashboardNav.addEventListener('click', renderDashboard);
 
-        document.getElementById('show-register').addEventListener('click', (e) => {
+        DOM.showRegisterLink.addEventListener('click', (e) => {
             e.preventDefault();
             DOM.loginForm.classList.add('hidden');
-            document.getElementById('register-form').classList.remove('hidden');
+            DOM.registerForm.classList.remove('hidden');
         });
-        document.getElementById('show-login').addEventListener('click', (e) => {
+
+        DOM.showLoginLink.addEventListener('click', (e) => {
             e.preventDefault();
-            document.getElementById('register-form').classList.add('hidden');
+            DOM.registerForm.classList.add('hidden');
             DOM.loginForm.classList.remove('hidden');
         });
 
-        DOM.dashboardNav.addEventListener('click', renderDashboard);
-        DOM.myBetsNav.addEventListener('click', renderGameCenter);
-        
         const { data } = await supabaseClient.auth.getSession();
         if (data.session) {
             showAppView(data.session.user);

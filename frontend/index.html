@@ -29,3 +29,29 @@
                 <p class="form-switcher">Already have an account? <a href="#" id="show-login">Login here</a></p>
             </div>
         </div>
+    </div>
+
+    <div id="app-view" class="hidden">
+        <header>
+            <h1 id="app-title">The Gambler</h1>
+            <nav>
+                <button id="dashboard-nav" class="btn btn-nav">Dashboard</button>
+                <button id="my-bets-nav" class="btn btn-nav">Weekly Games</button>
+                <button id="leaderboard-nav" class="btn btn-nav">Leaderboard</button>
+            </nav>
+            <div class="user-info">
+                <div id="user-balance-container">
+                    <span id="user-balance-icon">💰</span>
+                    <span id="user-balance">0.00</span>
+                </div>
+                <span id="welcome-username">username</span>
+                <button id="logout-button" class="btn-secondary">Logout</button>
+            </div>
+        </header>
+        <main id="main-content"></main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
