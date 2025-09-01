@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_URL = 'https://gausmmcqmpfignfivymi.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhdXNtbWNxbXBmaWduZml2eW1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTYwNzcsImV4cCI6MjA3MTYzMjA3N30.1_KPWn-hps2BV98-0rbN5pPFl8xBrGndfrB_chIZnSg';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- STATE MANAGEMENT ---
     const state = {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- RENDER FUNCTIONS ---
     const renderHeader = () => {
         if (!state.user) return;
-        DOM.welcomeUsername.textContent = state.user.email; // Supabase uses email for auth
+        DOM.welcomeUsername.textContent = state.user.email;
     };
 
     const renderDashboard = () => {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderGameCenter = async () => {
-        const { data: games, error } = await supabase.from('games').select(`
+        const { data: games, error } = await supabaseClient.from('games').select(`
             *,
             home_team:home_team_id (team_name, abbreviation),
             away_team:away_team_id (team_name, abbreviation)
@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- EVENT HANDLERS ---
     const handleLogin = async (e) => {
         e.preventDefault();
-        const email = e.target.elements['login-username'].value; // Using email now
+        const email = e.target.elements['login-username'].value;
         const password = e.target.elements['login-password'].value;
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
             alert(`Login Error: ${error.message}`);
         } else {
@@ -73,9 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        const email = e.target.elements['register-username'].value; // Using email now
+        const email = e.target.elements['register-username'].value;
         const password = e.target.elements['register-password'].value;
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) {
             alert(`Registration Error: ${error.message}`);
         } else {
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        await supabaseClient.auth.signOut();
         showAuthView();
     };
 
@@ -114,18 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('show-register').addEventListener('click', (e) => {
             e.preventDefault();
             DOM.loginForm.classList.add('hidden');
-            DOM.register-form.classList.remove('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
         });
         document.getElementById('show-login').addEventListener('click', (e) => {
             e.preventDefault();
-            DOM.registerForm.classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
             DOM.loginForm.classList.remove('hidden');
         });
 
         DOM.dashboardNav.addEventListener('click', renderDashboard);
         DOM.myBetsNav.addEventListener('click', renderGameCenter);
         
-        const { data } = await supabase.auth.getSession();
+        const { data } = await supabaseClient.auth.getSession();
         if (data.session) {
             showAppView(data.session.user);
         } else {
