@@ -16,18 +16,85 @@ document.addEventListener('DOMContentLoaded', () => {
         welcomeUsername: document.getElementById('welcome-username'),
         userBalance: document.getElementById('user-balance'),
         dashboardNav: document.getElementById('dashboard-nav'),
-        myBetsNav: document.getElementById('my-bets-nav'),
+        gamesNav: document.getElementById('games-nav'),
         leaderboardNav: document.getElementById('leaderboard-nav'),
+        rewardsNav: document.getElementById('rewards-nav'),
         logoutButton: document.getElementById('logout-button'),
     };
 
-    const renderHeader = () => {
+    const renderHeader = async () => {
         if (!state.user) return;
         DOM.welcomeUsername.textContent = state.user.user_metadata.username || state.user.email;
+        
+        // Fetch the user's full profile to get balance and tier
+        const { data, error } = await supabaseClient.from('users').select('balance, tier').eq('user_id', state.user.id).single();
+        if(data) {
+            DOM.userBalance.textContent = Number(data.balance).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        }
     };
 
     const renderDashboard = () => {
         DOM.mainContent.innerHTML = `<h2>Dashboard</h2><p>Welcome, ${state.user.user_metadata.username || state.user.email}.</p>`;
+    };
+
+    const renderGameCenter = async () => {
+        const { data: games, error } = await supabaseClient.from('games').select(`
+            *,
+            home_team:home_team_id (team_name, abbreviation),
+            away_team:away_team_id (team_name, abbreviation)
+        `).eq('status', 'scheduled');
+
+        if (error) {
+            console.error('Error fetching games:', error);
+            DOM.mainContent.innerHTML = `<p>Could not load games.</p>`;
+            return;
+        }
+
+        const gamesHtml = games.map(game => {
+            const gameDate = new Date(game.game_time);
+            const formattedDate = gameDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            const formattedTime = gameDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            return `
+                <div class="game-card">
+                    <div class="game-info"><span>${formattedDate} - ${formattedTime}</span></div>
+                    <div class="matchup">
+                        <div class="team">
+                            <span class="team-name">${game.away_team.team_name}</span>
+                            <span class="team-line">${game.away_team_line > 0 ? '+' : ''}${game.away_team_line}</span>
+                        </div>
+                        <span class="at-symbol">@</span>
+                        <div class="team">
+                            <span class="team-name">${game.home_team.team_name}</span>
+                            <span class="team-line">${game.home_team_line > 0 ? '+' : ''}${game.home_team_line}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        DOM.mainContent.innerHTML = `<div class="game-center-container"><h2>Weekly Games</h2>${games.length > 0 ? gamesHtml : '<p>No games scheduled yet.</p>'}</div>`;
+    };
+
+    const renderLeaderboard = async () => {
+        const { data: leaderboard, error } = await supabaseClient.from('users').select('username, xp').order('xp', { ascending: false }).limit(10);
+
+        if (error) {
+            console.error('Error fetching leaderboard:', error);
+            DOM.mainContent.innerHTML = `<p>Could not load leaderboard.</p>`;
+            return;
+        }
+
+        const leaderboardHtml = leaderboard.map((user, index) => `
+            <div class="leaderboard-row">
+                <span class="rank">${index + 1}</span>
+                <span class="username">${user.username}</span>
+                <span class="xp">${user.xp.toLocaleString()} XP</span>
+            </div>`).join('');
+        DOM.mainContent.innerHTML = `
+            <div class="leaderboard-container">
+                <h2>Leaderboard</h2>
+                <div class="leaderboard-header"><span>Rank</span><span>Player</span><span>XP</span></div>
+                <div class="leaderboard-list">${leaderboardHtml}</div>
+            </div>`;
     };
 
     const handleLogin = async (e) => {
@@ -44,17 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = DOM.registerForm.querySelector('#register-username').value;
         const email = DOM.registerForm.querySelector('#register-email').value;
         const password = DOM.registerForm.querySelector('#register-password').value;
-        
-        const { error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-                data: {
-                    username: username
-                }
-            }
+        const { data, error } = await supabaseClient.auth.signUp({
+            email, password,
+            options: { data: { username: username } }
         });
-
         if (error) return alert(`Registration Error: ${error.message}`);
         alert('Registration successful!');
         DOM.registerForm.classList.add('hidden');
@@ -85,13 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM.registerForm.addEventListener('submit', handleRegister);
         DOM.logoutButton.addEventListener('click', handleLogout);
         DOM.dashboardNav.addEventListener('click', renderDashboard);
+        DOM.gamesNav.addEventListener('click', renderGameCenter);
+        DOM.leaderboardNav.addEventListener('click', renderLeaderboard);
 
         DOM.showRegisterLink.addEventListener('click', (e) => {
             e.preventDefault();
             DOM.loginForm.classList.add('hidden');
             DOM.registerForm.classList.remove('hidden');
         });
-
         DOM.showLoginLink.addEventListener('click', (e) => {
             e.preventDefault();
             DOM.registerForm.classList.add('hidden');
