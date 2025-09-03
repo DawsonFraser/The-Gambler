@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_URL = 'https://vrxhzvrsngugxfwrwftg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzbmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjQ3MjQsImV4cCI6MjA3MTkwMDcyNH0.9tbvcp4A62HJvJ_QcCgv-XL7MAQDuRLNK2HaP2-79mg';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzcmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjQ3MjQsImV4cCI6MjA3MTkwMDcyNH0.9tbvcp4A62HJvJ_QcCgv-XL7MAQDuRLNK2HaP2-79mg';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const state = { user: null };
@@ -23,11 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderHeader = () => {
         if (!state.user) return;
-        DOM.welcomeUsername.textContent = state.user.email;
+        DOM.welcomeUsername.textContent = state.user.user_metadata.username || state.user.email;
     };
 
     const renderDashboard = () => {
-        DOM.mainContent.innerHTML = `<h2>Dashboard</h2><p>Welcome, ${state.user.email}.</p>`;
+        DOM.mainContent.innerHTML = `<h2>Dashboard</h2><p>Welcome, ${state.user.user_metadata.username || state.user.email}.</p>`;
     };
 
     const handleLogin = async (e) => {
@@ -41,9 +41,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        const username = DOM.registerForm.querySelector('#register-username').value;
         const email = DOM.registerForm.querySelector('#register-email').value;
         const password = DOM.registerForm.querySelector('#register-password').value;
-        const { error } = await supabaseClient.auth.signUp({ email, password });
+        
+        const { error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    username: username
+                }
+            }
+        });
+
         if (error) return alert(`Registration Error: ${error.message}`);
         alert('Registration successful!');
         DOM.registerForm.classList.add('hidden');
