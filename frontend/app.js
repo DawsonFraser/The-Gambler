@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_URL = 'https://vrxhzvrsngugxfwrwftg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzcmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTc3MjksImV4cCI6MjA3MTYzMzcyOX0.4x42dk-y-a_g5k1-c4tYkZuY4k-8aY3j-p-bJ5cF8yM';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzIΙNiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzbmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjQ3MjQsImV4cCI6MjA3MTkwMDcyNH0.9tbvcp4A62HJvJ_QcCgv-XL7MAQDuRLNK2HaP2-79mg';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const state = { user: null };
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = DOM.registerForm.querySelector('#register-password').value;
         const { error } = await supabaseClient.auth.signUp({ email, password });
         if (error) return alert(`Registration Error: ${error.message}`);
-        alert('Registration successful! Please check your email to confirm.');
+        alert('Registration successful!');
         DOM.registerForm.classList.add('hidden');
         DOM.loginForm.classList.remove('hidden');
     };
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DOM.registerForm.classList.add('hidden');
             DOM.loginForm.classList.remove('hidden');
         });
-
+        
         const { data } = await supabaseClient.auth.getSession();
         if (data.session) {
             showAppView(data.session.user);
