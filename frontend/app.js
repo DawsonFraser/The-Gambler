@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_URL = 'https://vrxhzvrsngugxfwrwftg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzcmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjQ3MjQsImV4cCI6MjA3MTkwMDcyNH0.9tbvcp4A62HJvJ_QcCgv-XL7MAQDuRLNK2HaP2-79mg';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyeGh6dnJzbmd1Z3hmd3J3ZnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjQ3MjQsImV4cCI6MjA3MTkwMDcyNH0.9tbvcp4A62HJvJ_QcCgv-XL7MAQDuRLNK2HaP2-79mg';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const state = { user: null };
