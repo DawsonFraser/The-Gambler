@@ -6,4 +6,7 @@ const adminMiddleware = require('../middleware/adminMiddleware');
 
 router.post('/games', [authMiddleware, adminMiddleware], adminController.addGame);
 
+// --- ADD THIS NEW ROUTE ---
+router.post('/games/settle', [authMiddleware, adminMiddleware], adminController.settleGame);
+
 module.exports = router;
