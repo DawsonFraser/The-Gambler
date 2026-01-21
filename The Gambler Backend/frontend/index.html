@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Gambler</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="auth-view">
+        <div class="auth-container">
+            <div id="login-form" class="form-container">
+                <h2>Login</h2>
+                <form>
+                    <div class="input-group"><label for="login-email">Email</label><input type="email" id="login-email" name="email" required></div>
+                    <div class="input-group"><label for="login-password">Password</label><input type="password" id="login-password" name="password" required></div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                <p class="form-switcher">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+            </div>
+            <div id="register-form" class="form-container hidden">
+                <h2>Register</h2>
+                <form>
+                    <div class="input-group"><label for="register-username">Username</label><input type="text" id="register-username" name="username" required></div>
+                    <div class="input-group"><label for="register-email">Email</label><input type="email" id="register-email" name="email" required></div>
+                    <div class="input-group"><label for="register-password">Password</label><input type="password" id="register-password" name="password" required></div>
+                    <div class="input-group"><label for="register-confirm-password">Confirm Password</label><input type="password" id="register-confirm-password" name="confirm_password" required></div>
+                    <button type="submit" class="btn">Register</button>
+                </form>
+                <p class="form-switcher">Already have an account? <a href="#" id="show-login">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-view" class="hidden">
+        <header>
+            <h1 id="app-title">The Gambler</h1>
+            <nav>
+                <button id="dashboard-nav" class="btn btn-nav">Dashboard</button>
+                <button id="games-nav" class="btn btn-nav">Weekly Games</button>
+                <button id="leaderboard-nav" class="btn btn-nav">Leaderboard</button>
+                <button id="rewards-nav" class="btn btn-nav">My Tier</button>
+            </nav>
+            <div class="user-info">
+                <div id="user-balance-container">
+                    <span id="user-balance-icon">💰</span>
+                    <span id="user-balance">0.00</span>
+                </div>
+                <span id="welcome-username">username</span>
+                <button id="logout-button" class="btn-secondary">Logout</button>
+            </div>
+        </header>
+        <main id="main-content"></main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
